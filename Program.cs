@@ -5,6 +5,7 @@ using Scalar.AspNetCore.Swashbuckle;
 using System.Reflection;
 using WebAPI.net9.Data;
 using WebAPI.net9.Interfaces;
+using WebAPI.net9.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,9 @@ builder.Services.AddScoped<IAppDbContext, AppDbContext>(); // Injeta a dependên
 builder.Services.AddDbContext<AppDbContext>(options => // Configuração do DbContext para usar o SQL Server
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")); // Obtém a string de conexão do arquivo appsettings.json
-}); 
+});
+
+builder.Services.AddScoped<ProdutoService>(); // Registra o serviço ProdutoService para injeção de dependência
 
 var app = builder.Build(); // Começo da aplicação
 

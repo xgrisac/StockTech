@@ -9,11 +9,11 @@
             Controller para gerenciar produtos.
             </summary>
         </member>
-        <member name="M:WebAPI.net9.Controllers.ProdutoController.#ctor(WebAPI.net9.Data.AppDbContext,Microsoft.Extensions.Logging.ILogger{WebAPI.net9.Controllers.ProdutoController})">
+        <member name="M:WebAPI.net9.Controllers.ProdutoController.#ctor(WebAPI.net9.Services.ProdutoService,Microsoft.Extensions.Logging.ILogger{WebAPI.net9.Controllers.ProdutoController})">
             <summary>
-            Construtor que injeta o contexto do banco de dados e o logger.
+            Construtor que injeta o ProdutoService e o logger.
             </summary>
-            <param name="context">Instância do AppDbContext.</param>
+            <param name="produtoService">Instância do ProdutoService.</param>
             <param name="logger">Instância do ILogger</param>
         </member>
         <member name="M:WebAPI.net9.Controllers.ProdutoController.BuscarProdutos">
@@ -27,7 +27,7 @@
             Busca um produto pelo ID.
             </summary>
             <param name="id">ID do produto.</param>
-            <returns>Erro 404, produto encontrado ou erro 500.</returns>       
+            <returns>Erro 404, produto encontrado ou erro 500.</returns>
         </member>
         <member name="M:WebAPI.net9.Controllers.ProdutoController.CriarProduto(WebAPI.net9.Models.ProdutoModel)">
             <summary>
@@ -58,6 +58,11 @@
             <param name="nome">Nome do produto (opcional).</param>
             <param name="marca">Marca do produto (opcional).</param>
             <returns>Lista de produtos encontrados ou erro 500.</returns>
+        </member>
+        <member name="T:WebAPI.net9.Interfaces.IAppDbContext">
+            <summary>
+             Define os contratos que o AppDbontext deve cumprir, sem se importar com com isso é implementado.
+            </summary>
         </member>
         <member name="T:WebAPI.net9.Migrations.FirstMigration">
             <inheritdoc />

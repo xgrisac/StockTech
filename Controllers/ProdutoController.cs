@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using WebAPI.net9.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebAPI.net9.Models;
+using WebAPI.net9.Services;
+
+// Controller responsável por chamar os métodos do ProdutoService
 
 namespace WebAPI.net9.Controllers
 {
@@ -12,19 +14,19 @@ namespace WebAPI.net9.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public class ProdutoController : ControllerBase 
+    public class ProdutoController : ControllerBase
     {
-        private readonly IAppDbContext _context;
+        private readonly ProdutoService _produtoService;
         private readonly ILogger<ProdutoController> _logger; // Logger para registrar informações, avisos e erros
 
         /// <summary>
-        /// Construtor que injeta o contexto do banco de dados e o logger.
+        /// Construtor que injeta o ProdutoService e o logger.
         /// </summary>
-        /// <param name="context">Instância do AppDbContext.</param>
+        /// <param name="produtoService">Instância do ProdutoService.</param>
         /// <param name="logger">Instância do ILogger</param>
-        public ProdutoController(IAppDbContext context, ILogger<ProdutoController> logger)
+        public ProdutoController(ProdutoService produtoService, ILogger<ProdutoController> logger)
         {
-            _context = context;
+            _produtoService = produtoService;
             _logger = logger;
         }
 
@@ -39,15 +41,14 @@ namespace WebAPI.net9.Controllers
 
             try
             {
-                var produtos = await _context.Produtos.ToListAsync(); // Pega todos os produtos do banco de dados de forma assíncrona e transforma em lista
+                var produtos = await _produtoService.ListarProdutosAsync(); // Pega todos os produtos da camada service e transforma em lista
                 _logger.LogInformation("Lista de produtos retornada com sucesso. Total {Total}", produtos.Count); // Log informativo
                 return Ok(produtos);
             }
-           
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao buscar produto.");
-                return StatusCode(500, $"Erro interno. Por favor, tente novamente mais tarde. {ex.Message}"); // ex.Message retorna o erro captarado pela variável EX
+                return StatusCode(500, $"Erro interno. Por favor, tente novamente mais tarde. {ex.Message}"); // ex.Message retorna o erro capturado pela variável ex
             }
         }
 
@@ -55,16 +56,16 @@ namespace WebAPI.net9.Controllers
         /// Busca um produto pelo ID.
         /// </summary>
         /// <param name="id">ID do produto.</param>
-        /// <returns>Erro 404, produto encontrado ou erro 500.</returns>       
+        /// <returns>Erro 404, produto encontrado ou erro 500.</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProdutoModel>> BuscarProdutoPorId(int id) 
+        public async Task<ActionResult<ProdutoModel>> BuscarProdutoPorId(int id)
         {
             _logger.LogDebug("Iniciando requisição: BuscarProdutosPorId");
 
             try
             {
-                var produto = await _context.Produtos.FindAsync(id); // Find busca dentro do banco de dados
-                if (produto == null) 
+                var produto = await _produtoService.BuscarPorIdAsync(id); // Busca produto na camada service
+                if (produto == null)
                 {
                     _logger.LogWarning("Produto com ID {Id} não encontrado.", id);
                     return NotFound("Registro não localizado"); // Erro 404
@@ -72,7 +73,6 @@ namespace WebAPI.net9.Controllers
                 _logger.LogInformation("Produto com ID {Id} encontrado com sucesso.", id);
                 return Ok(produto);
             }
-            
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao buscar produto com ID {Id}", id);
@@ -99,22 +99,20 @@ namespace WebAPI.net9.Controllers
                 }
 
                 if (produtoModel.Id != 0)
-                {   
+                {
                     _logger.LogWarning("Tentativa de criar produto com ID informado manualmente");
                     return BadRequest("O campo 'Id' não deve ser informado. Ele é gerado automaticamente, favor excluir o campo ID do seu JSON.");
                 }
 
-                _context.Produtos.Add(produtoModel); // Adiciona o produto no banco de dados
-                await _context.SaveChangesAsync(); // Salva as alterações no banco de dados 
+                await _produtoService.CadastrarProdutoAsync(produtoModel); // Cadastra produto pela camada service
 
                 _logger.LogInformation("Produto criado com sucesso. ID: {Id}", produtoModel.Id);
-                return CreatedAtAction(nameof(BuscarProdutoPorId), new { id = produtoModel.Id }, produtoModel); // Retorna o produto criado com o status 201 (Created)
+                return CreatedAtAction(nameof(BuscarProdutoPorId), new { id = produtoModel.Id }, produtoModel); // Retorna produto criado
             }
-            
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao criar produto");
-                return StatusCode(500, $"Erro interno. Por favor, tente novamente mais tarde. {ex.Message}"); 
+                return StatusCode(500, $"Erro interno. Por favor, tente novamente mais tarde. {ex.Message}");
             }
         }
 
@@ -131,32 +129,21 @@ namespace WebAPI.net9.Controllers
 
             try
             {
-                var produto = await _context.Produtos.FindAsync(id); // find busca o elemento dentro da tabela produtos do DB
-
-                if (produto == null)
+                var produtoatualizado = await _produtoService.AtualizarProdutoAsync(id, produtoModel); // Atualiza produto via service
+                if (!produtoatualizado)
                 {
                     _logger.LogWarning("Produto com ID {Id} não localizado", id);
-                    return NotFound("Registro não localizado");
+                    return NotFound("Registro não localizado"); // Erro 404
                 }
-                // Atualizo o produto antigo com o novo conteúdo
-                produto.Nome = produtoModel.Nome;
-                produto.Descricao = produtoModel.Descricao;
-                produto.Marca = produtoModel.Marca;
-                produto.QuantidadeEstoque = produtoModel.QuantidadeEstoque;
-                produto.CodigoDeBarras = produtoModel.CodigoDeBarras;
-
-                _context.Produtos.Update(produto);
-                await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Produto com ID {Id} atualizado com sucesso", id);
-                return Ok(produto);
+                return Ok(produtoModel);
             }
-            
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao atualizar produto com ID {Id}", id);
-                return StatusCode(500, $"Erro interno. Por favor, tente novamente mais tarde. {ex.Message}"); 
-            }          
+                return StatusCode(500, $"Erro interno. Por favor, tente novamente mais tarde. {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -171,26 +158,21 @@ namespace WebAPI.net9.Controllers
 
             try
             {
-                var produto = await _context.Produtos.FindAsync(id);
-
-                if (produto == null)
+                var produtodeletado = await _produtoService.DeletarProdutoAsync(id); // Deleta produto via service
+                if (!produtodeletado)
                 {
                     _logger.LogWarning("Produto com ID {Id} não localizado", id);
-                    return NotFound("Registro não localizado");
+                    return NotFound("Registro não localizado"); // Erro 404
                 }
-
-                _context.Produtos.Remove(produto);
-                await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Produto com ID {Id} deletado com sucesso", id);
                 return Ok($"Conteúdo do ID {id} deletado com sucesso!");
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao deletar produto com ID {Id}", id);
-                return StatusCode(500, $"Erro interno. Por favor, tente novamente mais tarde. {ex.Message}");                
-            }            
+                return StatusCode(500, $"Erro interno. Por favor, tente novamente mais tarde. {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -199,22 +181,17 @@ namespace WebAPI.net9.Controllers
         /// <param name="nome">Nome do produto (opcional).</param>
         /// <param name="marca">Marca do produto (opcional).</param>
         /// <returns>Lista de produtos encontrados ou erro 500.</returns>
-        [HttpGet("Buscar")] // Busca os produtos por nome
+        [HttpGet("Buscar")] // Busca os produtos por nome ou marca
         public async Task<ActionResult<List<ProdutoModel>>> BuscarPorNomeOuMarca(string? nome, string? marca)
         {
             _logger.LogDebug("Iniciando requisição: BuscarPorNomeOuMarca");
 
             try
             {
-                var produtos = await _context.Produtos
-                .Where(p => (nome == null || p.Nome.Contains(nome)) &&
-                            (marca == null || p.Marca.Contains(marca)))
-                .ToListAsync();
-
+                var produtos = await _produtoService.BuscarPorNomeOuMarcaAsync(nome, marca);
                 _logger.LogInformation("Busca por produtos realizada com sucesso. Total {Total}", produtos.Count);
                 return Ok(produtos);
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao buscar produtos por nome ou marca. Nome: {Nome}, Marca: {Marca}", nome, marca);
