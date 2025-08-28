@@ -4,31 +4,55 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.net9.Services
 {
+    /// <summary>
+    /// Serviço responsável pelas operações de CRUD com a entidade Produto.
+    /// </summary>
     public class ProdutoService
     {
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Construtor que injeta o contexto do banco de dados.
+        /// </summary>
         public ProdutoService(AppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Retorna a lista de todos os produtos cadastrados.
+        /// </summary>
         public async Task<List<ProdutoModel>> ListarProdutosAsync()
         {
             return await _context.Produtos.ToListAsync();
         }
 
+        /// <summary>
+        /// Busca um produto específico pelo ID.
+        /// </summary>
+        /// <param name="id">ID do produto.</param>
+        /// <returns>O produto encontrado ou null.</returns>
         public async Task<ProdutoModel?> BuscarPorIdAsync(int id)
         {
             return await _context.Produtos.FindAsync(id);
         }
 
+        /// <summary>
+        /// Cadastra um novo produto no banco de dados.
+        /// </summary>
+        /// <param name="produto">Produto a ser inserido.</param>
         public async Task CadastrarProdutoAsync(ProdutoModel produto)
         {
             _context.Produtos.Add(produto);
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Atualiza um produto existente no banco de dadoscom base no ID informado.
+        /// </summary>
+        /// <param name="id">ID do produto que será atualizado.</param>
+        /// <param name="produto">Produto a ser atualizado.</param>
+        /// <returns>True se atualizado, false caso não encontrado.</returns>
         public async Task<bool> AtualizarProdutoAsync(int id, ProdutoModel produto)
         {
             var produtoExistente = await _context.Produtos.FindAsync(id);
@@ -45,6 +69,11 @@ namespace WebAPI.net9.Services
             return true;
         }
 
+        /// <summary>
+        /// Remove um produto do banco de dados com base no ID informado.
+        /// </summary>
+        /// <param name="id">ID do produto que será atualizado.</param>
+        /// <returns>True se deletado, false caso não encontrado.</returns>
         public async Task<bool> DeletarProdutoAsync(int id)
         {
             var produto = await _context.Produtos.FindAsync(id);
@@ -56,6 +85,12 @@ namespace WebAPI.net9.Services
             return true;
         }
 
+        /// <summary>
+        /// Busca produtos por nome ou marca.
+        /// </summary>
+        /// <param name="nome">Nome parcial ou completo do produto.</param>
+        /// <param name="marca">Marca parcial ou completa do produto.</param>
+        /// <returns>Lista de produtos encontrada.</returns>
         public async Task<List<ProdutoModel>> BuscarPorNomeOuMarcaAsync(string? nome, string? marca)
         {
             return await _context.Produtos
