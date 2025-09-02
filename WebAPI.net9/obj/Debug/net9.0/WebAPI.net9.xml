@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebAPI.net9</name>
+    </assembly>
+    <members>
+        <member name="T:WebAPI.net9.Controllers.ProdutoController">
+            <summary>
+            Controller para gerenciar produtos.
+            </summary>
+        </member>
+        <member name="M:WebAPI.net9.Controllers.ProdutoController.#ctor(WebAPI.net9.Services.ProdutoService,Microsoft.Extensions.Logging.ILogger{WebAPI.net9.Controllers.ProdutoController})">
+            <summary>
+            Construtor que injeta o ProdutoService e o logger.
+            </summary>
+            <param name="produtoService">Instância do ProdutoService.</param>
+            <param name="logger">Instância do ILogger</param>
+        </member>
+        <member name="M:WebAPI.net9.Controllers.ProdutoController.BuscarProdutos">
+            <summary>
+            Retorna todos os produtos cadastrados.
+            </summary>
+            <returns>Lista de produtos ou erro 500.</returns>
+        </member>
+        <member name="M:WebAPI.net9.Controllers.ProdutoController.BuscarProdutoPorId(System.Int32)">
+            <summary>
+            Busca um produto pelo ID.
+            </summary>
+            <param name="id">ID do produto.</param>
+            <returns>Erro 404, produto encontrado ou erro 500.</returns>
+        </member>
+        <member name="M:WebAPI.net9.Controllers.ProdutoController.CriarProduto(WebAPI.net9.Models.ProdutoModel)">
+            <summary>
+            Cria um novo produto.
+            </summary>
+            <param name="produtoModel">Objeto do produto a ser criado.</param>
+            <returns>Erro 400, produto encontrado ou erro 500.</returns>
+        </member>
+        <member name="M:WebAPI.net9.Controllers.ProdutoController.EditarProduto(WebAPI.net9.Models.ProdutoModel,System.Int32)">
+            <summary>
+            Atualiza um produto existente.
+            </summary>
+            <param name="produtoModel">Dados atualizados do produto.</param>
+            <param name="id">ID do produto a ser atualizado.</param>
+            <returns>Erro 404, produto encontrado ou erro 500.</returns>
+        </member>
+        <member name="M:WebAPI.net9.Controllers.ProdutoController.DeletarProduto(System.Int32)">
+            <summary>
+            Deleta um produto pelo ID.
+            </summary>
+            <param name="id">ID do produto a ser removido.</param>
+            <returns>Erro 404, mensagem de sucesso ou erro 500.</returns>
+        </member>
+        <member name="M:WebAPI.net9.Controllers.ProdutoController.BuscarPorNomeOuMarca(System.String,System.String)">
+            <summary>
+            Busca produtos pelo nome ou marca.
+            </summary>
+            <param name="nome">Nome do produto (opcional).</param>
+            <param name="marca">Marca do produto (opcional).</param>
+            <returns>Lista de produtos encontrados ou erro 500.</returns>
+        </member>
+        <member name="T:WebAPI.net9.Interfaces.IAppDbContext">
+            <summary>
+             Define os contratos que o AppDbontext deve cumprir, sem se importar com com isso é implementado.
+            </summary>
+        </member>
+        <member name="T:WebAPI.net9.Migrations.FirstMigration">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.net9.Migrations.FirstMigration.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.net9.Migrations.FirstMigration.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.net9.Migrations.FirstMigration.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebAPI.net9.Models.ProdutoModel">
+            <summary>
+            Representa um produto com suas propriedades para criação e alteração.
+            </summary>
+        </member>
+        <member name="T:WebAPI.net9.Properties.Resources">
+            <summary>
+              Uma classe de recurso de tipo de alta segurança, para pesquisar cadeias de caracteres localizadas etc.
+            </summary>
+        </member>
+        <member name="P:WebAPI.net9.Properties.Resources.ResourceManager">
+            <summary>
+              Retorna a instância de ResourceManager armazenada em cache usada por essa classe.
+            </summary>
+        </member>
+        <member name="P:WebAPI.net9.Properties.Resources.Culture">
+            <summary>
+              Substitui a propriedade CurrentUICulture do thread atual para todas as
+              pesquisas de recursos que usam essa classe de recurso de tipo de alta segurança.
+            </summary>
+        </member>
+        <member name="T:WebAPI.net9.Services.ProdutoService">
+            <summary>
+            Serviço responsável pelas operações de CRUD com a entidade Produto.
+            </summary>
+        </member>
+        <member name="M:WebAPI.net9.Services.ProdutoService.#ctor(WebAPI.net9.Data.AppDbContext)">
+            <summary>
+            Construtor que injeta o contexto do banco de dados.
+            </summary>
+        </member>
+        <member name="M:WebAPI.net9.Services.ProdutoService.ListarProdutosAsync">
+            <summary>
+            Retorna a lista de todos os produtos cadastrados.
+            </summary>
+        </member>
+        <member name="M:WebAPI.net9.Services.ProdutoService.BuscarPorIdAsync(System.Int32)">
+            <summary>
+            Busca um produto específico pelo ID.
+            </summary>
+            <param name="id">ID do produto.</param>
+            <returns>O produto encontrado ou null.</returns>
+        </member>
+        <member name="M:WebAPI.net9.Services.ProdutoService.CadastrarProdutoAsync(WebAPI.net9.Models.ProdutoModel)">
+            <summary>
+            Cadastra um novo produto no banco de dados.
+            </summary>
+            <param name="produto">Produto a ser inserido.</param>
+        </member>
+        <member name="M:WebAPI.net9.Services.ProdutoService.AtualizarProdutoAsync(System.Int32,WebAPI.net9.Models.ProdutoModel)">
+            <summary>
+            Atualiza um produto existente no banco de dadoscom base no ID informado.
+            </summary>
+            <param name="id">ID do produto que será atualizado.</param>
+            <param name="produto">Produto a ser atualizado.</param>
+            <returns>True se atualizado, false caso não encontrado.</returns>
+        </member>
+        <member name="M:WebAPI.net9.Services.ProdutoService.DeletarProdutoAsync(System.Int32)">
+            <summary>
+            Remove um produto do banco de dados com base no ID informado.
+            </summary>
+            <param name="id">ID do produto que será atualizado.</param>
+            <returns>True se deletado, false caso não encontrado.</returns>
+        </member>
+        <member name="M:WebAPI.net9.Services.ProdutoService.BuscarPorNomeOuMarcaAsync(System.String,System.String)">
+            <summary>
+            Busca produtos por nome ou marca.
+            </summary>
+            <param name="nome">Nome parcial ou completo do produto.</param>
+            <param name="marca">Marca parcial ou completa do produto.</param>
+            <returns>Lista de produtos encontrada.</returns>
+        </member>
+    </members>
+</doc>
