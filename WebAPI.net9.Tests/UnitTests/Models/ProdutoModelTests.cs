@@ -27,5 +27,38 @@ namespace WebAPI.net9.Tests.UnitTests.Models
             // Assert
             estoqueValido.Should().BeFalse("A quantidade de estoque não pode ser negativa");
         }
+
+        [Fact]
+
+        public void Nome_NaoPodeSerVazio()
+        {
+            // Arrange
+            var produto = new ProdutoModel
+            {
+                Nome = "", 
+            };
+
+            // Act
+            bool nomeValido = !string.IsNullOrWhiteSpace(produto.Nome); // Ação de teste
+
+            // Assert
+            nomeValido.Should().BeFalse("O nome do produto não pode ser vazio");
+        }
+
+        [Fact]
+        public void CodigoDeBarras_DeveTerPeloMenos8Caracteres()
+        {
+            // Arrange
+            var produto = new ProdutoModel
+            {
+                CodigoDeBarras = "12321" // valor inválido
+            };
+
+            // Act
+            bool codigoValido = produto.CodigoDeBarras.Length >= 8;
+
+            // Assert
+            codigoValido.Should().BeFalse("O código de barras deve ter pelo menos 8 caracteres"); // Resultado esperado
+        }
     }
 }
