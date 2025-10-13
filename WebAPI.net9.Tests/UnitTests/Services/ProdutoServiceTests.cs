@@ -11,7 +11,7 @@ namespace WebAPI.net9.Tests.UnitTests.Services
         [Fact]
         public async Task ListarProdutosAsync_DeveRetornarListaDeProdutos()
         {
-            // Arrange : Criação do banco fictício em memória
+            // Arrange : Preparação do cenário de teste
 
             var options = new DbContextOptionsBuilder<AppDbContext>()
                 .UseInMemoryDatabase(databaseName: "DbTest_ListarProdutos").Options; // Criação do banco de dados isolado em memória apenas para testes
@@ -26,7 +26,7 @@ namespace WebAPI.net9.Tests.UnitTests.Services
                 await context.SaveChangesAsync();
             }
 
-            // Act: Cria a instância do serviço e chama o método a ser testado
+            // Act: Execução do método a ser testado
 
             using (var context = new AppDbContext(options))
             {
@@ -41,6 +41,39 @@ namespace WebAPI.net9.Tests.UnitTests.Services
 
             }
 
+        }
+
+        [Fact]
+
+        public async Task BuscarPorIdAsync_DeveRetornarProdutoQuandoExistir()
+        {
+            // Arrange : Preparação do cenário de teste
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: "DbTest_BuscarPorId").Options; // Criação do banco
+
+            using (var context = new AppDbContext(options)) // Criação do contexto do banco
+            { 
+                context.Produtos.AddRange(new List<ProdutoModel> // Adiciona produtos fictícios
+                {
+                    new ProdutoModel { Id = 1, Nome = "Teclado" },
+                    new ProdutoModel { Id = 2, Nome = "Mouse" }
+                });
+                await context.SaveChangesAsync();
+            }
+            // Act: Execução do método a ser testado
+
+            using (var context = new AppDbContext(options)) // Nova instancia do contexto com as mesmas informações criadas acima   
+            {
+                var service = new ProdutoService(context); // Cria a instância do serviço 
+                var produto = await service.BuscarPorIdAsync(1); // Chama o método BuscarPorId 
+
+                // Assert: Verifica se o resultado está correto
+
+                Assert.NotNull(produto);
+                Assert.Equal(1, produto!.Id);
+                Assert.Equal("Teclado", produto.Nome);
+
+            }          
         }
     }
 }
