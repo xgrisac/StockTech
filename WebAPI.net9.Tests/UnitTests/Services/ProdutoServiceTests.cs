@@ -65,7 +65,7 @@ namespace WebAPI.net9.Tests.UnitTests.Services
             using (var context = new AppDbContext(options)) // Nova instancia do contexto com as mesmas informações criadas acima   
             {
                 var service = new ProdutoService(context); // Cria a instância do serviço 
-                var produto = await service.BuscarPorIdAsync(1); // Chama o método BuscarPorId 
+                var produto = await service.BuscarPorIdAsync(1); // Chama o método BuscarPorId e busca o valor 1
 
                 // Assert: Verifica se o resultado está correto
 
@@ -74,6 +74,39 @@ namespace WebAPI.net9.Tests.UnitTests.Services
                 Assert.Equal("Teclado", produto.Nome);
 
             }          
+        }
+
+        [Fact]
+
+        public async Task BuscarPorIdAsync_DeveRetornarNuloQuandoNaoExistir()
+        {
+            // Arrange: Prepara o cenário
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: "DbTest_BuscarPorId_NaoExistente").Options; 
+
+            using (var context = new AppDbContext(options))
+            {
+                context.Produtos.AddRange(new List<ProdutoModel>
+                {
+                    new ProdutoModel { Id = 1, Nome = "Teclado" },
+                    new ProdutoModel { Id = 2, Nome = "Mouse" }
+                });
+                await context.SaveChangesAsync();
+            }
+
+            // Act: Executa o metódo a ser testado
+
+            using (var context = new AppDbContext(options))
+            {
+                var service = new ProdutoService(context);
+                var produto = await service.BuscarPorIdAsync(999); // ID que não existe
+
+                // Assert: Verifica o resultado
+
+                Assert.Null(produto); // Espera que o resultado seja nulo
+
+            }
         }
     }
 }

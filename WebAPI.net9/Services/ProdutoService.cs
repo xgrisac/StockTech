@@ -30,8 +30,6 @@ namespace WebAPI.net9.Services
         /// <summary>
         /// Busca um produto específico pelo ID.
         /// </summary>
-        /// <param name="id">ID do produto.</param>
-        /// <returns>O produto encontrado ou null.</returns>
         public async Task<ProdutoModel?> BuscarPorIdAsync(int id)
         {
             return await _context.Produtos.FindAsync(id);
@@ -40,7 +38,6 @@ namespace WebAPI.net9.Services
         /// <summary>
         /// Cadastra um novo produto no banco de dados.
         /// </summary>
-        /// <param name="produto">Produto a ser inserido.</param>
         public async Task CadastrarProdutoAsync(ProdutoModel produto)
         {
             _context.Produtos.Add(produto);
@@ -48,11 +45,8 @@ namespace WebAPI.net9.Services
         }
 
         /// <summary>
-        /// Atualiza um produto existente no banco de dadoscom base no ID informado.
+        /// Atualiza um produto existente no banco de dados com base no ID informado.
         /// </summary>
-        /// <param name="id">ID do produto que será atualizado.</param>
-        /// <param name="produto">Produto a ser atualizado.</param>
-        /// <returns>True se atualizado, false caso não encontrado.</returns>
         public async Task<bool> AtualizarProdutoAsync(int id, ProdutoModel produto)
         {
             var produtoExistente = await _context.Produtos.FindAsync(id);
@@ -72,8 +66,6 @@ namespace WebAPI.net9.Services
         /// <summary>
         /// Remove um produto do banco de dados com base no ID informado.
         /// </summary>
-        /// <param name="id">ID do produto que será atualizado.</param>
-        /// <returns>True se deletado, false caso não encontrado.</returns>
         public async Task<bool> DeletarProdutoAsync(int id)
         {
             var produto = await _context.Produtos.FindAsync(id);
@@ -88,9 +80,6 @@ namespace WebAPI.net9.Services
         /// <summary>
         /// Busca produtos por nome ou marca.
         /// </summary>
-        /// <param name="nome">Nome parcial ou completo do produto.</param>
-        /// <param name="marca">Marca parcial ou completa do produto.</param>
-        /// <returns>Lista de produtos encontrada.</returns>
         public async Task<List<ProdutoModel>> BuscarPorNomeOuMarcaAsync(string? nome, string? marca)
         {
             return await _context.Produtos

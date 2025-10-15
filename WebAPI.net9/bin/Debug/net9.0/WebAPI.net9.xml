@@ -116,37 +116,26 @@
             <summary>
             Busca um produto específico pelo ID.
             </summary>
-            <param name="id">ID do produto.</param>
-            <returns>O produto encontrado ou null.</returns>
         </member>
         <member name="M:WebAPI.net9.Services.ProdutoService.CadastrarProdutoAsync(WebAPI.net9.Models.ProdutoModel)">
             <summary>
             Cadastra um novo produto no banco de dados.
             </summary>
-            <param name="produto">Produto a ser inserido.</param>
         </member>
         <member name="M:WebAPI.net9.Services.ProdutoService.AtualizarProdutoAsync(System.Int32,WebAPI.net9.Models.ProdutoModel)">
             <summary>
-            Atualiza um produto existente no banco de dadoscom base no ID informado.
+            Atualiza um produto existente no banco de dados com base no ID informado.
             </summary>
-            <param name="id">ID do produto que será atualizado.</param>
-            <param name="produto">Produto a ser atualizado.</param>
-            <returns>True se atualizado, false caso não encontrado.</returns>
         </member>
         <member name="M:WebAPI.net9.Services.ProdutoService.DeletarProdutoAsync(System.Int32)">
             <summary>
             Remove um produto do banco de dados com base no ID informado.
             </summary>
-            <param name="id">ID do produto que será atualizado.</param>
-            <returns>True se deletado, false caso não encontrado.</returns>
         </member>
         <member name="M:WebAPI.net9.Services.ProdutoService.BuscarPorNomeOuMarcaAsync(System.String,System.String)">
             <summary>
             Busca produtos por nome ou marca.
             </summary>
-            <param name="nome">Nome parcial ou completo do produto.</param>
-            <param name="marca">Marca parcial ou completa do produto.</param>
-            <returns>Lista de produtos encontrada.</returns>
         </member>
     </members>
 </doc>
